@@ -44,12 +44,12 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
     const comport = [basic, guestSearch, safety, access]
     //체크인, 체크아웃 랜덤 생성
     const generateCheckInDate = () => {
-        const checkInDate = faker.date.between('2023-01-01', '2023-12-31');
+        const checkInDate = faker.date.between('2023-01-01', '2023-12-05');
         checkInDate.setHours(0,0,0,0)
         return checkInDate
     };
     const generateThisMonthDate = () => {
-        const checkInDate = faker.date.between('2023-12-01', '2023-12-31');
+        const checkInDate = faker.date.between('2023-12-05', '2023-12-20');
         checkInDate.setHours(0,0,0,0)
         return checkInDate
     }
@@ -115,7 +115,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
                 bathroom: Math.floor(Math.random() * (3 - 1 + 1)) + 1,
                 description: faker.commerce.productDescription(),
                 comport: comport[randomIdx],
-                number: bedNum,
+                capacity: bedNum,
                 weekdayPrice: Math.floor((Math.random() + 1) * 3) * 10000,
                 weekendPrice: Math.floor((Math.random() + 1) * 5) * 10000,
             })
@@ -147,9 +147,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
             const checkOutDate = generateCheckOutDate(checkInDate);
             const dayCount =  countWeekdaysAndWeekends(checkInDate, checkOutDate)
 
-            const availableReservationNum = Math.min(accommodation.number, Math.floor(Math.random() * accommodation.number) + 1);
-
-            accommodation.number -= availableReservationNum;
+            const availableReservationNum = Math.min(accommodation.capacity, Math.floor(Math.random() * accommodation.capacity) + 1);
 
             const isOverlap = reservations.some(existingReservation => {
                 const existingCheckIn = existingReservation.checkIn;
@@ -162,7 +160,11 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
                 );
             });
 
-            if (!isOverlap) {
+            const isTypeAll = reservations.some(reservation =>
+                reservation.accommodation._id === accommodation._id && reservation.accommodation.type === 'All'
+            );
+
+            if (!isOverlap || !isTypeAll) {
 
                 const review  = i < 3 ? new Review({
                     star: Math.floor(Math.random() * 5),
