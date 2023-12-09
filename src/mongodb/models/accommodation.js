@@ -11,7 +11,7 @@ const AccommodationSchema = new Schema(
         bathroom: {type: Number, required: true}, // 화장실 수
         description: {type: String, required: true}, // 설명
         comport: {type: String, required: true}, //편의 시설
-        number: {type: Number, required:true}, //수용 인원 수
+        capacity: {type: Number, required:true}, //수용 인원 수
         weekdayPrice: {type: Number, required:true}, //주중 가격
         weekendPrice: {type: Number, required:true}, //주말 가격
     },

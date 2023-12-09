@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const hostname = "127.0.0.1";
 const port = 3000;
 const { generateDummyData } = require("./faker");
-const DB_URI = "mongodb://127.0.0.1:27017/mongotermproject";
+const DB_URI = "mongodb://127.0.0.1:27017/mongo_termproject";
 
 const server = async() => {
     try {
