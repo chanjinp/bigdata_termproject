@@ -11,4 +11,4 @@ const ReviewSchema = new Schema(
     {timestamps: true} //mapped Superclass처럼 공통 속성을 묶어주는 것처럼 사용
 )
 const Review = mongoose.model("Review", ReviewSchema);
-module.exports(Review);
+module.exports = {Review};

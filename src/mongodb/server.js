@@ -1,16 +1,15 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-
-const hostname = "localhost";
+const hostname = "127.0.0.1";
 const port = 3000;
 const { generateDummyData } = require("./faker");
-const DB_URI = "mongodb://localhost:27017/mongotermproject";
+const DB_URI = "mongodb://127.0.0.1:27017/mongotermproject";
 
 const server = async() => {
     try {
         await mongoose.connect(DB_URI); //connect는 비동기 동작
-        // generateDummyData(5,10,10); // 더미 만들기
+        generateDummyData(10,10,0, 0); // 더미 만들기
         app.use(express.json());
         app.listen(port, hostname, function () {
             console.log("Server is running...");

@@ -8,10 +8,10 @@ const ReservationSchema = new Schema(
         review: {type:Types.ObjectId , required: false, ref: "Review"}, //리뷰 아이디
         totalPrice: {type: Number, required: true}, //총 가격
         reservationNum: {type: Number, required: true}, //예약 인원
-        checkIn: {type:String, required: true}, //체크인
-        checkOut: {type:String, required: true}, //체크아웃
+        checkIn: {type:Date, required: true}, //체크인
+        checkOut: {type:Date, required: true}, //체크아웃
     },
     {timestamps: true} //mapped Superclass처럼 공통 속성을 묶어주는 것처럼 사용
 )
 const Reservation = mongoose.model("Reservation", ReservationSchema);
-module.exports(Reservation);
+module.exports = {Reservation};
