@@ -44,11 +44,21 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
     const comport = [basic, guestSearch, safety, access]
     //체크인, 체크아웃 랜덤 생성
     const generateCheckInDate = () => {
-        return faker.date.between('2023-01-01', '2023-12-31');
+        const checkInDate = faker.date.between('2023-11-01', '2023-12-31');
+        checkInDate.setHours(0,0,0,0)
+        return checkInDate
     };
     const generateCheckOutDate = (checkInDate) => {
-        const maxCheckOutDate = new Date(checkInDate.getTime() + (30 * 24 * 60 * 60 * 1000)); // 예: 30일 이내
-        return faker.date.between(checkInDate, maxCheckOutDate);
+        const maxCheckOutDate = new Date(checkInDate.getTime() + (10 * 24 * 60 * 60 * 1000)); // 예: 10일 이내
+
+        // 체크인 날짜와 체크아웃 날짜가 동일한 경우, 체크아웃 날짜를 하루 뒤로 설정
+        if (maxCheckOutDate.getTime() === checkInDate.getTime()) {
+            maxCheckOutDate.setDate(maxCheckOutDate.getDate() + 1);
+        }
+
+        const checkOutDate = faker.date.between(checkInDate, maxCheckOutDate);
+        checkOutDate.setHours(20,0,0,0)
+        return checkOutDate
     };
     //주중, 주말 카운트
     const countWeekdaysAndWeekends = (checkInDate, checkOutDate) => {
@@ -120,27 +130,69 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
 
     //숙소 당 예약 3개
     accommodations.map(async (accommodation) => {
-        const checkInDate = generateCheckInDate();
-        const checkOutDate = generateCheckOutDate(checkInDate);
-        const dayCount =  countWeekdaysAndWeekends(checkInDate, checkOutDate)
         for (let i = 0; i < nReservation; i++) {
-            reviews.push(new Review({
-                star: Math.floor(Math.random() * 5),
-                content: faker.lorem.words()
-            }))
+            const checkInDate = generateCheckInDate();
+            const checkOutDate = generateCheckOutDate(checkInDate);
+            const dayCount =  countWeekdaysAndWeekends(checkInDate, checkOutDate)
+            const isReview = Math.random() < 0.5 ? true : false;
 
-            reservations.push(
-                new Reservation({
+
+            const availableReservationNum = Math.min(accommodation.number, Math.floor(Math.random() * accommodation.number) + 1);
+
+            accommodation.number -= availableReservationNum;
+
+            const isOverlap = reservations.some(existingReservation => {
+                const existingCheckIn = existingReservation.checkIn;
+                const existingCheckOut = existingReservation.checkOut;
+
+                return (
+                    (checkInDate >= existingCheckIn && checkInDate < existingCheckOut) ||
+                    (checkOutDate > existingCheckIn && checkOutDate <= existingCheckOut) ||
+                    (checkInDate <= existingCheckIn && checkOutDate >= existingCheckOut)
+                );
+            });
+
+            if (!isOverlap) {
+                // isReview가 true이면 Review 객체를 생성하고, 그렇지 않으면 null을 할당
+                const review = isReview ? new Review({
+                        star: Math.floor(Math.random() * 5),
+                        content: faker.lorem.words(),
+                    })
+                    : null;
+
+                const newReservation = new Reservation({
                     guest: guests[Math.floor(Math.random() * nGuest)]._id,
                     accommodation: accommodation,
-                    review: reviews[i],
+                    review: review,
                     totalPrice: accommodation.weekdayPrice * dayCount.weekdayCount + accommodation.weekendPrice * dayCount.weekendCount,
-                    reservationNum: accommodation.number,
+                    reservationNum: availableReservationNum,
                     checkIn: checkInDate,
                     checkOut: checkOutDate,
                     isCheckOut: true,
-                })
-            )
+                });
+
+                reservations.push(newReservation);
+
+                if(review != null) {
+                    reviews.push(review);
+                }
+            } else {
+                // 겹치는 경우 다시 숙소의 number 원상복구
+                accommodation.number += availableReservationNum;
+            }
+
+            // reservations.push(
+            //     new Reservation({
+            //         guest: guests[Math.floor(Math.random() * nGuest)]._id,
+            //         accommodation: accommodation,
+            //         review: review,
+            //         totalPrice: accommodation.weekdayPrice * dayCount.weekdayCount + accommodation.weekendPrice * dayCount.weekendCount,
+            //         reservationNum: availableReservationNum,
+            //         checkIn: checkInDate,
+            //         checkOut: checkOutDate,
+            //         isCheckOut: true,
+            //     })
+            // );
         }
     })
 
