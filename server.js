@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+app.use(express.json());
 const mongoose = require("mongoose");
 const hostname = "127.0.0.1";
 const port = 3000;
@@ -13,6 +14,7 @@ const server = async() => {
         await mongoose.connect(DB_URI); //connect는 비동기 동작
         generateDummyData(10,10,5); // 더미 만들기
         app.use(express.json());
+        app.use("/reservation", reservation_router);
         // app.use("/accommodation", accommodation_router);
         app.listen(port, hostname, function () {
             console.log("Server is running...");
@@ -21,4 +23,5 @@ const server = async() => {
         console.log(err);
     }
 }
+
 server();
