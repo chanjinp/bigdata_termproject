@@ -50,7 +50,6 @@ const canReservationCheck = async (checkIn, checkOut) => {
             ]
         }).populate({path: "accommodation"});
 
-
         // reservations 배열에 접근하여 각 예약과 숙소 정보에 접근
         for (const reservation of reservations) {
             const reservation_num = reservation.reservationNum;
@@ -107,7 +106,7 @@ accommodationRouter.get("/", async (req, res) => {
         await canReservationCheck(checkIn, checkOut);
         const result = available.filter(item => item.capacity >= number);
         res.status(202).send({result});
-        console.log({result});
+        available = []
     } catch (error) {
         console.log(error);
         res.status(500).send({error: error.message});
@@ -157,7 +156,7 @@ accommodationRouter.get("/houseType", async (req, res) => {
         await canReservationCheck(checkIn, checkOut);
         const result = available.filter(item => item.capacity >= number);
         res.status(202).send({result});
-        console.log({result});
+        available = []
     } catch (error) {
         console.log(error);
         res.status(500).send({error: error.message});
