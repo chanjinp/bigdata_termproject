@@ -1,9 +1,8 @@
 const faker = require("faker");
 const mongoose = require("mongoose");
 const {Accommodation, Guest, Reservation, Review} = require("./models");
-const {fa} = require("faker/lib/locales");
-const os = require('os');
 const fs = require('fs');
+const {generateCheckInDate, countWeekdaysAndWeekends, generateCheckOutDate, generateThisMonthDate} = require('./utils')
 const file_path = `./accommodation.txt`
 
 //file에서 숙소 이름 불러오기
@@ -78,52 +77,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
         '휠체어 접근 가능 욕실'
     const comport = [basic, guestSearch, safety, access]
     //체크인, 체크아웃 랜덤 생성
-    const generateCheckInDate = () => {
-        const checkInDate = faker.date.between('2023-01-01', '2023-12-05');
-        checkInDate.setHours(0, 0, 0, 0)
-        return checkInDate
-    };
-    const generateThisMonthDate = () => {
-        const checkInDate = faker.date.between('2023-12-05', '2023-12-20');
-        checkInDate.setHours(0, 0, 0, 0)
-        return checkInDate
-    }
-    const generateCheckOutDate = (checkInDate) => {
-        const maxCheckOutDate = new Date(checkInDate.getTime() + (3 * 24 * 60 * 60 * 1000)); // 예: 3일 이내
 
-        // 체크인 날짜와 체크아웃 날짜가 동일한 경우, 체크아웃 날짜를 하루 뒤로 설정
-        if (maxCheckOutDate.getTime() === checkInDate.getTime()) {
-            maxCheckOutDate.setDate(maxCheckOutDate.getDate() + 1);
-        }
-
-        const checkOutDate = faker.date.between(checkInDate, maxCheckOutDate);
-        checkOutDate.setHours(20, 0, 0, 0)
-        return checkOutDate
-    };
-    //주중, 주말 카운트
-    const countWeekdaysAndWeekends = (checkInDate, checkOutDate) => {
-        let weekdayCount = 0;
-        let weekendCount = 0;
-
-        const currentDate = new Date(checkInDate.getTime());
-
-        while (currentDate <= checkOutDate) {
-            const dayOfWeek = currentDate.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
-
-            if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-                // 주중 (월요일부터 금요일까지)
-                weekdayCount++;
-            } else {
-                // 주말 (토요일 또는 일요일)
-                weekendCount++;
-            }
-
-            // 다음 날짜로 이동
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-
-        return {weekdayCount, weekendCount};
-    };
     faker.locale = "ko";
     const db = mongoose.connection.db;
 
