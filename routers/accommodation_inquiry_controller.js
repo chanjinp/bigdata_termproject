@@ -32,9 +32,9 @@ accommodationRouter.get("/", async (req, res) => {
     }
 });
 //숙소 타입에 따른 조회 결과 All, Personal
-accommodationRouter.get("/:houseType", async (req, res) => {
+accommodationRouter.get("/houseType", async (req, res) => {
     try {
-        const {houseType} = req.params;
+        const houseType = req.query.type;
         const accommodations = await Accommodation.find(
             {capacity: {$gte: 5}, type: `${houseType}` })
         res.status(202).json({accommodations})
@@ -44,4 +44,19 @@ accommodationRouter.get("/:houseType", async (req, res) => {
     }
 });
 //TODO 정렬 해야함
+
+
+//sample url
+//http://127.0.0.1:3000/accommodation/select_one?name=숙소1
+accommodationRouter.get('/select_one', async (req, res) => {
+    try {
+        const name = req.query.name;
+        console.log(name)
+        const accommodation = await Accommodation.findOne({name: name})
+        res.status(202).json({accommodation})
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+})
 module.exports = accommodationRouter;
