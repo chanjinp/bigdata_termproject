@@ -5,7 +5,6 @@ const fs = require('fs');
 const {generateCheckInDate, countWeekdaysAndWeekends, generateCheckOutDate, generateThisMonthDate} = require('./utils')
 const file_path = `./accommodation.txt`
 
-//file에서 숙소 이름 불러오기
 function readAccommodationName(filePath, callback) {
     // 파일 읽기
     fs.readFile(file_path, 'utf8', (err, data) => {
