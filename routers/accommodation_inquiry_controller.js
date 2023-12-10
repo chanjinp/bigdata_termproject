@@ -156,9 +156,9 @@ accommodationRouter.get("/houseType", async (req, res) => {
 accommodationRouter.get('/select_one', async (req, res) => {
     try {
         const name = req.query.name;
-        console.log(name)
         const accommodation = await Accommodation.findOne({name: name})
-        res.status(202).json({accommodation})
+        const reservations = await Reservation.find({accommodation: accommodation._id})
+        res.status(202).json({accommodation, reservations})
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: error.message });
