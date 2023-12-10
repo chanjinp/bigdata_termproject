@@ -4,6 +4,17 @@ const {Guest} = require('../models/guest')
 const {Accommodation} = require('../models/accommodation')
 const {countWeekdaysAndWeekends, isOverlap} = require('../utils')
 
+/*
+requirement 3 request body sample
+ {
+    "guest_name":"guest1",
+    "accommodation_name":"숙소1",
+    "checkin":"2003-11-19T15:00:00.000Z",
+    "checkout":"2003-11-20T15:00:00.000Z",
+    "reservation_number":"3"
+}
+*/
+
 const reservation_router = Router()
 reservation_router.post("/", async(req, res) => {
     try {
