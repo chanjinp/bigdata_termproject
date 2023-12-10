@@ -2,16 +2,44 @@ const faker = require("faker");
 const mongoose = require("mongoose");
 const {Accommodation, Guest, Reservation, Review} = require("./models");
 const {fa} = require("faker/lib/locales");
+const os = require('os');
+const fs = require('fs');
+const file_path = `C:/Users/${os.userInfo().username}/accommodation.txt`
 
+//file에서 숙소 이름 불러오기
+function readAccommodationName(filePath, callback) {
+    // 파일 읽기
+    fs.readFile(file_path, 'utf8', (err, data) => {
+        if (err) {
+            // 파일 읽기 오류 처리
+            callback(err, null);
+            return;
+        }
+
+        // 각 줄을 배열로 분할하고 스트링 배열로 변환
+        const stringArray = data.split(',');
+
+        // 결과를 콜백 함수에 전달
+        callback(null, stringArray);
+    });
+}
 // eslint-disable-next-line no-undef
 generateDummyData = async (nAccommodation, nGuest, nReservation) => {
     const accommodations = [];
     const guests = [];
     const reservations = [];
     const reviews = [];
+    let accommodationName = [];
+    readAccommodationName(file_path, (err, result) => {
+        if(err) {
+            console.error('파일 읽기 오류', err);
+            return;
+        }
+        accommodationName = result;
+    })
 
     //dummyComponent
-    const accomodationType = ['All', 'All', 'All', 'All', 'All', 'Personal', 'Personal', 'Personal', 'Personal', 'Personal'];
+    const accommodationType = ['All', 'All', 'All', 'All', 'All', 'Personal', 'Personal', 'Personal', 'Personal', 'Personal'];
     //편의 시설
     const basic = '화장지, ' +
         '손과 몸을 씻을 수 있는 비누, ' +
@@ -45,12 +73,12 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
     //체크인, 체크아웃 랜덤 생성
     const generateCheckInDate = () => {
         const checkInDate = faker.date.between('2023-01-01', '2023-12-05');
-        checkInDate.setHours(0,0,0,0)
+        checkInDate.setHours(0, 0, 0, 0)
         return checkInDate
     };
     const generateThisMonthDate = () => {
         const checkInDate = faker.date.between('2023-12-05', '2023-12-20');
-        checkInDate.setHours(0,0,0,0)
+        checkInDate.setHours(0, 0, 0, 0)
         return checkInDate
     }
     const generateCheckOutDate = (checkInDate) => {
@@ -62,7 +90,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
         }
 
         const checkOutDate = faker.date.between(checkInDate, maxCheckOutDate);
-        checkOutDate.setHours(20,0,0,0)
+        checkOutDate.setHours(20, 0, 0, 0)
         return checkOutDate
     };
     //주중, 주말 카운트
@@ -87,7 +115,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
             currentDate.setDate(currentDate.getDate() + 1);
         }
 
-        return { weekdayCount, weekendCount };
+        return {weekdayCount, weekendCount};
     };
     faker.locale = "ko";
     const db = mongoose.connection.db;
@@ -107,8 +135,8 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
         const randomIdx = Math.floor(Math.random() * 4);
         accommodations.push(
             new Accommodation({
-                name: faker.lorem.words(),
-                type: accomodationType[i],
+                name: accommodationName[i],
+                type: accommodationType[i],
                 address: faker.address.city(),
                 bedroom: bedNum,
                 bed: bedNum,
@@ -137,7 +165,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
     accommodations.map(async (accommodation) => {
         let i = 0
         let checkInDate;
-        while(i < nReservation) {
+        while (i < nReservation) {
 
             if (i > 3) {
                 checkInDate = generateThisMonthDate();
@@ -145,7 +173,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
                 checkInDate = generateCheckInDate();
             }
             const checkOutDate = generateCheckOutDate(checkInDate);
-            const dayCount =  countWeekdaysAndWeekends(checkInDate, checkOutDate)
+            const dayCount = countWeekdaysAndWeekends(checkInDate, checkOutDate)
 
             const availableReservationNum = Math.min(accommodation.capacity, Math.floor(Math.random() * accommodation.capacity) + 1);
 
@@ -166,7 +194,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
 
             if (!isOverlap || !isTypeAll) {
 
-                const review  = i < 3 ? new Review({
+                const review = i < 3 ? new Review({
                     star: Math.floor(Math.random() * 5),
                     content: faker.lorem.words(),
                 }) : null;
@@ -183,7 +211,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
                 });
 
                 reservations.push(newReservation);
-                if(review != null) {
+                if (review != null) {
                     reviews.push(review)
                 }
                 i = i + 1
