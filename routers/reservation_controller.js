@@ -13,6 +13,9 @@ requirement 3 request body sample
     "checkout":"2003-11-20T15:00:00.000Z",
     "reservation_number":"3"
 }
+requirement 5 request url sample
+http://127.0.0.1:3000/reservation/guest1?type=all
+type = all, oncoming, terminated
 */
 
 const reservation_router = Router()
@@ -51,9 +54,21 @@ reservation_router.post("/", async(req, res) => {
         return res.status(500).send("예약 실패")
     }
 })
-reservation_router.get("/", async(req, res) => {
+reservation_router.get("/:guest_name", async(req, res) => {
     try {
-        const reservations = await Reservation.find({})
+        const guest_name = req.params.guest_name
+        const find_type = req.query.type
+        let reservations = []
+        const guest = await Guest.findOne({name: guest_name})
+        if(find_type ==='all') {
+            reservations = await Reservation.find({guest: guest._id})
+        } else if(find_type === 'oncoming') {
+            reservations = await Reservation.find({guest: guest._id, isCheckOut: false})
+        } else if(find_type === 'terminated') {
+            reservations = await Reservation.find({guest: guest._id, isCheckOut: true})
+        } else {
+            return res.status(400).send("잘못된 타입입니다.")
+        }
         res.send(reservations)
     } catch (e) {
         res.status(500).send()
