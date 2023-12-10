@@ -43,4 +43,5 @@ accommodationRouter.get("/:houseType", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+//TODO 정렬 해야함
 module.exports = accommodationRouter;
