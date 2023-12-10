@@ -46,7 +46,7 @@ const canReservationCheck = async (checkIn, checkOut) => {
                 }
             ],
             $and: [
-                {isCheckOut: true}
+                {isCheckOut: false}
             ]
         }).populate({path: "accommodation"});
 
