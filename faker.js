@@ -21,7 +21,7 @@ function readAccommodationName(filePath, callback) {
         callback(null, stringArray);
     });
 }
-// eslint-disable-next-line no-undef
+
 generateDummyData = async (nAccommodation, nGuest, nReservation) => {
     const accommodations = [];
     const guests = [];
@@ -75,8 +75,8 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
         '폭 36인치/91cm 이상의 넓은 복도, ' +
         '휠체어 접근 가능 욕실'
     const comport = [basic, guestSearch, safety, access]
-    //체크인, 체크아웃 랜덤 생성
 
+    //체크인, 체크아웃 랜덤 생성
     faker.locale = "ko";
     const db = mongoose.connection.db;
 
