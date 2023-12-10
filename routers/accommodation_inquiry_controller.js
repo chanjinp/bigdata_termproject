@@ -5,6 +5,8 @@ const {Reservation} = require('../models/reservation')
 const {countWeekdaysAndWeekends} = require('../utils');
 
 const accommodationRouter = Router();
+let available = [];
+const number = 5;
 
 /*
 게스트 숙소 조회 검사항목
@@ -20,26 +22,26 @@ const checkIn = new Date('2023-12-01')
 const checkOut = new Date('2023-12-05')
 
 const dayCount = countWeekdaysAndWeekends(checkIn, checkOut);
-const isCheck = async (checkIn, checkOut, number, accommodations) => {
+const canReservationCheck = async (checkIn, checkOut) => {
     try {
         const reservations = await Reservation.find({
             $or: [
                 {
                     $and: [
-                        { checkIn: { $lte: checkIn } },
-                        { checkOut: { $gte: checkOut } }
+                        {checkIn: {$lte: checkIn}},
+                        {checkOut: {$gte: checkOut}}
                     ]
                 },
                 {
                     $and: [
-                        { checkIn: { $lte: checkIn } },
-                        { checkOut: { $gte: checkOut } }
+                        {checkIn: {$lte: checkIn}},
+                        {checkOut: {$gte: checkOut}}
                     ]
                 },
                 {
                     $and: [
-                        { checkIn: { $gte: checkIn } },
-                        { checkOut: { $lte: checkOut } }
+                        {checkIn: {$gte: checkIn}},
+                        {checkOut: {$lte: checkOut}}
                     ]
                 }
             ],
@@ -48,23 +50,25 @@ const isCheck = async (checkIn, checkOut, number, accommodations) => {
             ]
         }).populate({path: "accommodation"});
 
+
         // reservations 배열에 접근하여 각 예약과 숙소 정보에 접근
         for (const reservation of reservations) {
-            console.log(reservation)
             const reservation_num = reservation.reservationNum;
-            const accommodation_capacity = reservation.accommodation.capacity;
-            console.log(reservation_num)
-            console.log(accommodation_capacity)
-            if (accommodation_capacity - reservation_num < number) {
-                return false;
+            const accommodation = reservation.accommodation;
+
+            for (const result of available) { // available -> 정렬된 숙소 미리 옮겨둔 배열
+                if (accommodation.name === result.name) { //각 예약 테이블에 존재했던 숙소 정보의 이름과 빼온 숙소의 이름이 같은 경우
+                    if(result.type === 'Personal') { //개인실이면 차로 넣고
+                        result.capacity = accommodation.capacity - reservation_num;
+                    }else {
+                        result.capacity = 0; //전체 실이면 예약 못하므로 0으로 고정
+                    }
+                }
             }
         }
-        // 모든 예약이 조건을 만족하면 true 반환
-        return true;
     } catch (error) {
         console.error('Error fetching reservations:', error);
         // 예외가 발생하면 false 반환 또는 적절한 예외 처리 수행
-        return false;
     }
 };
 //숙소 조건 없이 전체 조회
@@ -97,8 +101,13 @@ accommodationRouter.get("/", async (req, res) => {
                 $sort: {calculatePrice: -1, avgStar: -1}
             }
         ]);
-        res.status(202).send({accommodations});
-        console.log({accommodations});
+        for (const accommodation of accommodations) {
+            available.push(accommodation)
+        }
+        await canReservationCheck(checkIn, checkOut);
+        const result = available.filter(item => item.capacity >= number);
+        res.status(202).send({result});
+        console.log({result});
     } catch (error) {
         console.log(error);
         res.status(500).send({error: error.message});
@@ -142,8 +151,13 @@ accommodationRouter.get("/houseType", async (req, res) => {
                 $sort: {calculatePrice: -1, avgStar: -1}
             }
         ]);
-        res.status(202).send({accommodations});
-        console.log({accommodations});
+        for (const accommodation of accommodations) {
+            available.push(accommodation)
+        }
+        await canReservationCheck(checkIn, checkOut);
+        const result = available.filter(item => item.capacity >= number);
+        res.status(202).send({result});
+        console.log({result});
     } catch (error) {
         console.log(error);
         res.status(500).send({error: error.message});
@@ -161,7 +175,7 @@ accommodationRouter.get('/select_one', async (req, res) => {
         res.status(202).json({accommodation, reservations})
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({error: error.message});
     }
 })
 
