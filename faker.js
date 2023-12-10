@@ -122,6 +122,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
     accommodations.map(async (accommodation) => {
         let i = 0
         let checkInDate;
+        let avgStar = 0;
         while (i < nReservation) {
 
             if (i > 3) {
@@ -152,7 +153,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
             if (!isOverlap || !isTypeAll) {
 
                 const review = i < 3 ? new Review({
-                    star: Math.floor(Math.random() * 5),
+                    star: Math.floor(Math.random() * (5 - 1 + 1)) + 1,
                     content: faker.lorem.words(),
                 }) : null;
 
@@ -169,11 +170,13 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
 
                 reservations.push(newReservation);
                 if (review != null) {
+                    avgStar = avgStar + review.star;
                     reviews.push(review)
                 }
                 i = i + 1
             }
         }
+        accommodation.avgStar = Math.floor(avgStar/3);
     });
 
 
