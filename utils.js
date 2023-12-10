@@ -1,4 +1,5 @@
 const faker = require("faker");
+const {Reservation} = require('./models/reservation')
 const generateCheckInDate = () => {
     const checkInDate = faker.date.between('2023-01-01', '2023-12-05');
     checkInDate.setHours(0, 0, 0, 0)
@@ -46,9 +47,27 @@ const countWeekdaysAndWeekends = (checkInDate, checkOutDate) => {
     return {weekdayCount, weekendCount};
 };
 
+const isOverlap = async (checkin, checkout, accommodation) => {
+    const reservations = await Reservation.find({accommodation: accommodation._id, isCheckOut: false})
+    if(reservations.length === 0) {
+        return false
+    }
+    console.log(reservations.length)
+    return reservations.some(existingReservation => {
+        const existingCheckIn = existingReservation.checkIn;
+        const existingCheckOut = existingReservation.checkOut;
+
+        return (
+        (checkin >= existingCheckIn && checkin < existingCheckOut) ||
+        (checkout > existingCheckIn && checkout <= existingCheckOut) ||
+        (checkin <= existingCheckIn && checkout >= existingCheckOut)
+    )})
+};
+
 module.exports = {
     generateCheckInDate,
     generateThisMonthDate,
     generateCheckOutDate,
     countWeekdaysAndWeekends,
+    isOverlap
 };
