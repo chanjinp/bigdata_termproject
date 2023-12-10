@@ -46,6 +46,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
     }
     //dummyComponent
     const accommodationType = ['All', 'All', 'All', 'All', 'All', 'Personal', 'Personal', 'Personal', 'Personal', 'Personal'];
+    const guestName = ['guest1', 'guest2','guest3','guest4','guest5','guest6','guest7', 'guest8','guest9','guest10'];
     //편의 시설
     const basic = '화장지, ' +
         '손과 몸을 씻을 수 있는 비누, ' +
@@ -157,12 +158,9 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
     }
     //게스트 등록
     for (let i = 0; i < nGuest; i++) {
-        const firstName = faker.name.firstName();
-        const lastName = faker.name.lastName();
-        const fullName = lastName + firstName;
         guests.push(
             new Guest({
-                name: fullName,
+                name: guestName[i],
             })
         )
     }
