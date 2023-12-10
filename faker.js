@@ -30,14 +30,20 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
     const reservations = [];
     const reviews = [];
     let accommodationName = [];
-    readAccommodationName(file_path, (err, result) => {
-        if(err) {
-            console.error('파일 읽기 오류', err);
-            return;
-        }
-        accommodationName = result;
-    })
-
+    try {
+        accommodationName = await new Promise((resolve, reject) => {
+            readAccommodationName(file_path, (err, result) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(result);
+            });
+        });
+    } catch (err) {
+        console.error('파일 읽기 오류', err);
+        return;
+    }
     //dummyComponent
     const accommodationType = ['All', 'All', 'All', 'All', 'All', 'Personal', 'Personal', 'Personal', 'Personal', 'Personal'];
     //편의 시설
