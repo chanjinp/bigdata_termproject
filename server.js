@@ -12,8 +12,9 @@ const DB_URI = "mongodb://127.0.0.1:27017/mongo_termproject";
 const server = async() => {
     try {
         await mongoose.connect(DB_URI); //connect는 비동기 동작
-        generateDummyData(10,10,5); // 더미 만들기
+        //generateDummyData(10,10,5); // 더미 만들기
         app.use(express.json());
+        app.use("/reservation", reservation_router);
         // app.use("/accommodation", accommodation_router);
         app.listen(port, hostname, function () {
             console.log("Server is running...");
@@ -22,4 +23,5 @@ const server = async() => {
         console.log(err);
     }
 }
+
 server();
