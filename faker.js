@@ -4,7 +4,7 @@ const {Accommodation, Guest, Reservation, Review} = require("./models");
 const {fa} = require("faker/lib/locales");
 const os = require('os');
 const fs = require('fs');
-const file_path = `C:/Users/${os.userInfo().username}/accommodation.txt`
+const file_path = `./accommodation.txt`
 
 //file에서 숙소 이름 불러오기
 function readAccommodationName(filePath, callback) {

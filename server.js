@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const hostname = "127.0.0.1";
 const port = 3000;
 const { generateDummyData } = require("./faker");
+const reservation_router = require("./routers/reservation_controller");
 const DB_URI = "mongodb://127.0.0.1:27017/mongo_termproject";
 
 const server = async() => {
@@ -17,5 +18,10 @@ const server = async() => {
     }catch(err) {
         console.log(err);
     }
+
+
+
 }
+
+app.use("/reservation", reservation_router)
 server();
