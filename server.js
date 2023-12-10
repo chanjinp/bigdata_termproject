@@ -16,7 +16,6 @@ const server = async() => {
         app.use(express.json());
         app.use("/reservation", reservation_router);
         app.use("/accommodation", accommodation_router);
-
         app.listen(port, hostname, function () {
             console.log("Server is running...");
         }); //서버가 연결을 기다림 -> 포트, 호스트 이름, 콜백 함수

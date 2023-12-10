@@ -150,4 +150,19 @@ accommodationRouter.get("/houseType", async (req, res) => {
     }
 });
 
+
+//sample url
+//http://127.0.0.1:3000/accommodation/select_one?name=숙소1
+accommodationRouter.get('/select_one', async (req, res) => {
+    try {
+        const name = req.query.name;
+        console.log(name)
+        const accommodation = await Accommodation.findOne({name: name})
+        res.status(202).json({accommodation})
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+})
+
 module.exports = accommodationRouter;
