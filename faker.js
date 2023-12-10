@@ -5,7 +5,6 @@ const fs = require('fs');
 const {generateCheckInDate, countWeekdaysAndWeekends, generateCheckOutDate, generateThisMonthDate} = require('./utils')
 const file_path = `./accommodation.txt`
 
-//file에서 숙소 이름 불러오기
 function readAccommodationName(filePath, callback) {
     // 파일 읽기
     fs.readFile(file_path, 'utf8', (err, data) => {
@@ -123,6 +122,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
     accommodations.map(async (accommodation) => {
         let i = 0
         let checkInDate;
+        let avgStar = 0;
         while (i < nReservation) {
 
             if (i > 3) {
@@ -153,7 +153,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
             if (!isOverlap || !isTypeAll) {
 
                 const review = i < 3 ? new Review({
-                    star: Math.floor(Math.random() * 5),
+                    star: Math.floor(Math.random() * (5 - 1 + 1)) + 1,
                     content: faker.lorem.words(),
                 }) : null;
 
@@ -170,11 +170,13 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
 
                 reservations.push(newReservation);
                 if (review != null) {
+                    avgStar = avgStar + review.star;
                     reviews.push(review)
                 }
                 i = i + 1
             }
         }
+        accommodation.avgStar = Math.floor(avgStar/3);
     });
 
 
