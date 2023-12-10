@@ -14,6 +14,7 @@ const AccommodationSchema = new Schema(
         capacity: {type: Number, required:true}, //수용 인원 수
         weekdayPrice: {type: Number, required:true}, //주중 가격
         weekendPrice: {type: Number, required:true}, //주말 가격
+        avgStar: {type: Number, default: 0}, //평균 평점
     },
     {timestamps: true} // mapped Superclass처럼 공통 속성을 묶어주는 것처럼 사용
 )
