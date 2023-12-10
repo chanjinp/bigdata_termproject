@@ -19,29 +19,86 @@ const accommodationRouter = Router();
 const checkIn = new Date('2023-12-10')
 const checkOut = new Date('2023-12-15')
 
+const dayCount = countWeekdaysAndWeekends(checkIn, checkOut);
 
 //숙소 조건 없이 전체 조회
 accommodationRouter.get("/", async (req, res) => {
     try {
-        const {houseType} = req.params;
-        const accommodations = await Accommodation.find({})
-        res.status(202).json({accommodations})
+        const accommodations = await Accommodation.aggregate([
+            {
+                $project: {
+                    _id: 0,
+                    name: 1,
+                    type: 1,
+                    address: 1,
+                    bedroom: 1,
+                    bed: 1,
+                    bathroom: 1,
+                    description: 1,
+                    comport: 1,
+                    capacity: 1,
+                    calculatePrice: {
+                        $add: [
+                            {$multiply: ["$weekdayPrice", dayCount.weekdayCount]},
+                            {$multiply: ["$weekendPrice", dayCount.weekendCount]}
+                        ]
+                    }
+                }
+            },
+            {
+                $sort: {calculatePrice: -1}
+            }
+        ]);
+        res.status(202).send({accommodations});
+        console.log({accommodations});
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: error.message });
+        res.status(500).send({error: error.message});
     }
 });
+//항상 수용 인원은 5보다 크게 고정
 //숙소 타입에 따른 조회 결과 All, Personal
 accommodationRouter.get("/:houseType", async (req, res) => {
     try {
         const {houseType} = req.params;
-        const accommodations = await Accommodation.find(
-            {capacity: {$gte: 5}, type: `${houseType}` })
-        res.status(202).json({accommodations})
+
+        const accommodations = await Accommodation.aggregate([
+            {
+                $match: {
+                    type: houseType,
+                    capacity: {$gte: 5}
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    name: 1,
+                    type: 1,
+                    address: 1,
+                    bedroom: 1,
+                    bed: 1,
+                    bathroom: 1,
+                    description: 1,
+                    comport: 1,
+                    capacity: 1,
+                    calculatePrice: {
+                        $add: [
+                            {$multiply: ["$weekdayPrice", dayCount.weekdayCount]},
+                            {$multiply: ["$weekendPrice", dayCount.weekendCount]}
+                        ]
+                    }
+                }
+            },
+            {
+                $sort: {calculatePrice: -1}
+            }
+        ]);
+        res.status(202).send({accommodations});
+        console.log({accommodations});
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: error.message });
+        res.status(500).send({error: error.message});
     }
 });
-//TODO 정렬 해야함
+
 module.exports = accommodationRouter;
