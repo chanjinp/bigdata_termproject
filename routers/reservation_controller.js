@@ -6,12 +6,8 @@ const reservation_router = Router()
 reservation_router.post("/", async(req, res) => {
     try {
         const {guest_id, house_id, checkin, checkout, reservation_number} = req.body
-        let guest = Guest.findByName(guest_id)
-        if(!guest) {
-            res.status(400).send({error:"guest does not exist"})
-        }
         console.log(guest_id, house_id, checkin, checkout, reservation_number)
-        res(200).send(123)
+        return res(200).send()
     } catch (e) {
 
     }
