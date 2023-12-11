@@ -3,6 +3,7 @@ const {Reservation} = require('../models/reservation')
 const {Guest} = require('../models/guest')
 const {Accommodation} = require('../models/accommodation')
 const {countWeekdaysAndWeekends, isOverlap} = require('../utils')
+const reservation_router = Router()
 
 /*
 requirement 3 request body sample
@@ -13,12 +14,7 @@ requirement 3 request body sample
     "checkout":"2003-11-20T15:00:00.000Z",
     "reservation_number":"3"
 }
-requirement 5 request url sample
-http://127.0.0.1:3000/reservation/guest1?type=all
-type = all, oncoming, terminated
 */
-
-const reservation_router = Router()
 reservation_router.post("/", async(req, res) => {
     try {
         const {guest_name, accommodation_name, checkin, checkout, reservation_number} = req.body
@@ -54,6 +50,28 @@ reservation_router.post("/", async(req, res) => {
         return res.status(500).send("예약 실패")
     }
 })
+
+/*
+requirement 4 request url sample
+http://127.0.0.1:3000/reservation/6575ab708277cb189321dd73
+reserveId는 DB에서 직접 조회 후 입력할 수 있다
+*/
+reservation_router.delete("/:reservation_id", async(req, res) => {
+    try {
+        const reservation_id = req.params.reservation_id
+        await Reservation.findByIdAndDelete(reservation_id)
+        res.send("삭제 성공")
+    } catch (e) {
+        console.log(e)
+        res.status(500).send("삭제 실패")
+    }
+})
+
+/*
+requirement 5 request url sample
+http://127.0.0.1:3000/reservation/guest1?type=all
+type = all, oncoming, terminated
+*/
 reservation_router.get("/:guest_name", async(req, res) => {
     try {
         const guest_name = req.params.guest_name
@@ -61,11 +79,11 @@ reservation_router.get("/:guest_name", async(req, res) => {
         let reservations = []
         const guest = await Guest.findOne({name: guest_name})
         if(find_type ==='all') {
-            reservations = await Reservation.find({guest: guest._id})
+            reservations = await Reservation.find({guest: guest._id}).populate('accommodation')
         } else if(find_type === 'oncoming') {
-            reservations = await Reservation.find({guest: guest._id, isCheckOut: false})
+            reservations = await Reservation.find({guest: guest._id, isCheckOut: false}).populate('accommodation')
         } else if(find_type === 'terminated') {
-            reservations = await Reservation.find({guest: guest._id, isCheckOut: true})
+            reservations = await Reservation.find({guest: guest._id, isCheckOut: true}).populate('accommodation')
         } else {
             return res.status(400).send("잘못된 타입입니다.")
         }
