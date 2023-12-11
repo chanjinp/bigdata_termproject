@@ -79,11 +79,11 @@ reservation_router.get("/:guest_name", async(req, res) => {
         let reservations = []
         const guest = await Guest.findOne({name: guest_name})
         if(find_type ==='all') {
-            reservations = await Reservation.find({guest: guest._id})
+            reservations = await Reservation.find({guest: guest._id}).populate('accommodation')
         } else if(find_type === 'oncoming') {
-            reservations = await Reservation.find({guest: guest._id, isCheckOut: false})
+            reservations = await Reservation.find({guest: guest._id, isCheckOut: false}).populate('accommodation')
         } else if(find_type === 'terminated') {
-            reservations = await Reservation.find({guest: guest._id, isCheckOut: true})
+            reservations = await Reservation.find({guest: guest._id, isCheckOut: true}).populate('accommodation')
         } else {
             return res.status(400).send("잘못된 타입입니다.")
         }

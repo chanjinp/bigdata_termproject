@@ -26,7 +26,6 @@ const generateCheckOutDate = (checkInDate) => {
 const countWeekdaysAndWeekends = (checkInDate, checkOutDate) => {
     let weekdayCount = 0;
     let weekendCount = 0;
-
     const currentDate = new Date(checkInDate.getTime());
 
     while (currentDate <= checkOutDate) {
