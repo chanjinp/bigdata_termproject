@@ -18,10 +18,6 @@ const number = 5;
 - 정렬 [가격, 별점] 순으로 내림차순
 - 검색 조건에 맞는 숙소 정보를 보여준다.
  */
-const checkIn = new Date('2023-12-01')
-const checkOut = new Date('2023-12-05')
-
-const dayCount = countWeekdaysAndWeekends(checkIn, checkOut);
 const canReservationCheck = async (checkIn, checkOut) => {
     try {
         const reservations = await Reservation.find({
@@ -71,58 +67,15 @@ const canReservationCheck = async (checkIn, checkOut) => {
     }
 };
 //숙소 조건 없이 전체 조회
-accommodationRouter.get("/", async (req, res) => {
+accommodationRouter.post("/", async (req, res) => {
     try {
-
-        const accommodations = await Accommodation.aggregate([
-            {
-                $project: {
-                    _id: 0,
-                    name: 1,
-                    type: 1,
-                    address: 1,
-                    bedroom: 1,
-                    bed: 1,
-                    bathroom: 1,
-                    description: 1,
-                    comport: 1,
-                    capacity: 1,
-                    calculatePrice: {
-                        $add: [
-                            {$multiply: ["$weekdayPrice", dayCount.weekdayCount]},
-                            {$multiply: ["$weekendPrice", dayCount.weekendCount]}
-                        ]
-                    },
-                    avgStar: 1,
-                }
-            },
-            {
-                $sort: {calculatePrice: -1, avgStar: -1}
-            }
-        ]);
-        for (const accommodation of accommodations) {
-            available.push(accommodation)
-        }
-        await canReservationCheck(checkIn, checkOut);
-        const result = available.filter(item => item.capacity >= number);
-        res.status(202).send({result});
-        available = []
-    } catch (error) {
-        console.log(error);
-        res.status(500).send({error: error.message});
-    }
-});
-//항상 수용 인원은 5보다 크게 고정
-//숙소 타입에 따른 조회 결과 All, Personal
-accommodationRouter.get("/houseType", async (req, res) => {
-    try {
-        const houseType = req.query.type;
-
+        const {checkIn, checkOut, number, houseType} = req.body;
+        const dayCount = countWeekdaysAndWeekends(new Date(checkIn), new Date(checkOut));
         const accommodations = await Accommodation.aggregate([
             {
                 $match: {
                     type: houseType,
-                    capacity: {$gte: 5}
+                    capacity: {$gte: number}
                 }
             },
             {
@@ -162,7 +115,6 @@ accommodationRouter.get("/houseType", async (req, res) => {
         res.status(500).send({error: error.message});
     }
 });
-
 
 //sample url
 //http://127.0.0.1:3000/accommodation/select_one?name=숙소1

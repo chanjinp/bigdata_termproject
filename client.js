@@ -1,44 +1,24 @@
 console.log("client is running...");
-const axios = require("axios");
-const {printAccommodationInfo} = require("./print")
-//요구사항 1번 - 조건에 맞는 숙소 조회하기
+const {bookHouse, reservationHistory, inquiryAccommodation, inquiryAllTypeAccommodation,
+    inquiryPersonalTypeAccommodation, cancelReservation
+} = require("./client_requirement");
 
+const checkin = new Date("2023-12-01");
+const checkout = new Date("2023-12-05");
 
-const inquiryAccommodation = async () => {
-    try {
-        const response = await axios.get("http://127.0.0.1:3000/accommodation/");
-        const accommodations = response.data.result;
-        for(let i = 0; i< accommodations.length; i++) {
-            printAccommodationInfo(accommodations[i])
-        }
-    } catch (error) {
-        console.error("Error in inquiryAccommodation:", error);
-    }
-}
+//요구사항 1
+// inquiryAccommodation(checkin, checkout, 5, "All");
+// inquiryAccommodation(checkin, checkout, 5, "Personal");
 
-const inquiryAllTypeAccommodation = async () => {
-    try {
-        const response = await axios.get("http://127.0.0.1:3000/accommodation/houseType?type=All");
-        const accommodations = response.data.result;
-        for(let i = 0; i< accommodations.length; i++) {
-            printAccommodationInfo(accommodations[i])
-        }
-    } catch (error) {
-        console.error("Error in inquiryAccommodation:", error);
-    }
-}
+//요구사항 2
 
-const inquiryPersonalTypeAccommodation = async () => {
-    try {
-        const response = await axios.get("http://127.0.0.1:3000/accommodation/houseType?type=Personal");
-        const accommodations = response.data.result;
-        for(let i = 0; i< accommodations.length; i++) {
-            printAccommodationInfo(accommodations[i])
-        }
-    } catch (error) {
-        console.error("Error in inquiryAccommodation:", error);
-    }
-}
-// inquiryAccommodation(); //전체
-// inquiryAllTypeAccommodation(); // 전체실 타입에 관한
-// inquiryPersonalTypeAccommodation() // 개인실 타입에 관한
+//요구사항 3
+//bookHouse("guest1", "숙소8", "2023-12-10", "2023-12-13", 2)
+
+//요구사항 4  예약 Object._id 가져와서 입력 필요
+// cancelReservation("")
+
+//요구사항 5
+// reservationHistory("guest1", "terminated")
+
+//요구사항 6
