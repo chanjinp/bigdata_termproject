@@ -2,6 +2,7 @@ const {Router} = require("express")
 const {Reservation} = require('../models/reservation');
 const { Guest } = require('../models/guest');
 const {Review} = require('../models/review');
+const {Accommodation} = require("../models/accommodation");
 const review_router = Router();
 
 /*
@@ -30,7 +31,7 @@ review_router.post('/:reservation_id', async (req, res) => {
 
         for (const reservation of reservations) {
             if (reservation.review === null) {
-                console.log(reservation._id);
+                console.log("리뷰가 없는 것들:" + reservation._id);
             }
         }
 
@@ -39,7 +40,8 @@ review_router.post('/:reservation_id', async (req, res) => {
             return res.status(400).json({ message: '리뷰를 작성할 수 있는 예약이 없습니다.' });
         }
 
-        const reservationWithoutReview = reservations.find(reservation => reservation.review === null);
+        const reservationWithoutReview
+            = reservations.find(reservation => reservation.review === null); //리뷰가 없는 예약 객체
 
         if(!reservationWithoutReview) {
             return res.status(400).json({message: '모든 예약에 이미 리뷰가 작성되었습니다. '});
@@ -53,6 +55,22 @@ review_router.post('/:reservation_id', async (req, res) => {
             content: content,
             star: star
         };
+
+        const accommodation = await Accommodation.findById(reservationWithoutReview.accommodation._id); //리뷰가 등록되는 예약과 관련된 숙소
+        const accommodation_all_reservation = await Reservation.find({accommodation: {_id: accommodation._id}}); //해당 숙소의 모든 예약들 가져오기
+        let avgStar = 0;
+        let cnt = 0;
+        for(const target of accommodation_all_reservation) { //숙소에 관련된 모든 예약들의 리뷰 별점을 가져와서 계산
+            if(target.review != null) {
+                avgStar += target.review.star;
+                cnt++;
+            }
+        }
+        avgStar += reviewData.star;
+        cnt++;
+        avgStar /= cnt; //내가 넣은 별점까지 추가해서 계산 완료
+        accommodation.avgStar = Math.floor(avgStar); //숙소의 avgStar에 Set
+        await accommodation.save();
 
         const review = new Review(reviewData);
         await review.save();
