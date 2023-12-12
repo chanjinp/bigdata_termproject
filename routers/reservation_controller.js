@@ -59,8 +59,12 @@ reserveId는 DB에서 직접 조회 후 입력할 수 있다
 reservation_router.delete("/:reservation_id", async(req, res) => {
     try {
         const reservation_id = req.params.reservation_id
-        await Reservation.findByIdAndDelete(reservation_id)
-        res.send("삭제 성공")
+        const result = await Reservation.findByIdAndDelete(reservation_id).and({isCheckOut: false})
+        if(result != null) {
+            res.send("삭제 성공")
+        }else {
+            res.send("체크아웃이 완료된 예약이므로 삭제 실패")
+        }
     } catch (e) {
         console.log(e)
         res.status(500).send("삭제 실패")

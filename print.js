@@ -116,17 +116,23 @@ const printCal = (reservations, month, type, capacity) => {
 
 const print_reservation_history = (reservations) => {
     console.log("[숙박 완료 리스트]")
-    console.log("숙소명\t\t체크인\t\t\t체크아웃\t\t후기")
-    reservations.map(reservation => {
+    const data = reservations.map(reservation => {
         if(reservation.review === null) {
-            reservation.review = " X"
+            reservation.review = "X"
         } else {
-            reservation.review = " O"
+            reservation.review = "O"
         }
         reservation.checkIn = reservation.checkIn.split("T")[0]
         reservation.checkOut = reservation.checkOut.split("T")[0]
-        console.log(`${reservation.accommodation.name}\t\t${reservation.checkIn}\t\t${reservation.checkOut}\t\t${reservation.review}`)
+        return({
+            숙소명: reservation.accommodation.name,
+            체크인: reservation.checkIn,
+            체크아웃: reservation.checkOut,
+            요금: reservation.totalPrice,
+            후기: reservation.review
+        })
     })
+    console.table(data)
 }
 module.exports = {
     printAccommodationInfo,
