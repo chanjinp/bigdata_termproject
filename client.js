@@ -11,7 +11,7 @@ const checkout = new Date("2023-12-05");
 //inquiryAccommodation(checkin, checkout, 5, "Personal");
 
 //요구사항 2
-houseDetail("숙소1", 12)
+//houseDetail("숙소1", 12)
 
 //요구사항 3
 // bookHouse("guest1", "숙소8", "2023-12-10", "2023-12-13", 2)
@@ -23,4 +23,4 @@ houseDetail("숙소1", 12)
 // reservationHistory("guest1", "terminated")
 
 //요구사항 6  예약 Object._id 가져와서 입력 필요
-//addComments("guest1", "6577e8340024430681dbb7a8", "몽고", 1)
+addComments("guest2", "657818dc6b3835cbd4b039c9", "몽고", 1)

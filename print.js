@@ -39,11 +39,9 @@ const printCal = (reservations, month, type, capacity) => {
     const last_day = endDay.getDate()
     let day_cnt_array = null
     if(type === 'All') {
-        // day_cnt_array = new Array(last_day + 1).fill("*")
-        day_cnt_array = new Array(last_day).fill("*")
+        day_cnt_array = new Array(last_day + 1).fill("*")
     } else {
-        day_cnt_array = new Array(last_day).fill(capacity)
-        // day_cnt_array = new Array(last_day + 1).fill(capacity)
+        day_cnt_array = new Array(last_day + 1).fill(capacity)
     }
 
     reservations.map(res => {
@@ -51,12 +49,12 @@ const printCal = (reservations, month, type, capacity) => {
         const checkout = new Date(res.checkOut)
         if(startDay <= checkout && endDay >= checkin) {
 
-            while(checkin < checkout) {
+            while(checkin <= checkout) {
                 if(checkin.getMonth() === checkout.getMonth()) {
                     if(type === 'All') {
-                        day_cnt_array[checkin.getDate()] = "O"
+                        day_cnt_array[checkin.getDate() - 1] = "O" // 12월 6일에서 12월 7일까지 빌렸는데 12월 7일에 빌릴 수 없다고 나와서 수정함.
                     } else {
-                        day_cnt_array[checkin.getDate()] = day_cnt_array[checkin.getDate()] - res.reservationNum
+                        day_cnt_array[checkin.getDate() - 1] = day_cnt_array[checkin.getDate() - 1] - res.reservationNum
                     }
                 }
                 checkin = new Date(checkin.getFullYear(), checkin.getMonth(), checkin.getDate() + 1)
@@ -99,7 +97,7 @@ const printCal = (reservations, month, type, capacity) => {
                     if(j > day) {
                         break
                     }
-                    calendar += day_cnt_array[j] + "  "
+                    calendar += (j<1? " " : day_cnt_array[j]) + "  "
                     k -= 1
                     j += 1
                 }
@@ -110,7 +108,7 @@ const printCal = (reservations, month, type, capacity) => {
     }
     calendar += '\n '
     while(temp + 1 <= last_day) {
-        calendar += day_cnt_array[temp] + " "
+        calendar += day_cnt_array[temp] + "  "
         temp += 1
     }
     console.log(calendar)

@@ -102,26 +102,9 @@ async function reservationHistory(guest_name, type) {
         console.log("예약 내역 조회 실패")
     }
 }
-// async function addComments(guest_name, reservation_id, content, star){
-//     console.log("addComments is running...")
-//
-//     try{
-//         const reviewData = {
-//             guest_name: guest_name,
-//             content: content,
-//             star: star
-//         }
-//         console.log(reviewData)
-//
-//         const res = await axios.post(`http://127.0.0.1:3000/writeReview/${reservation_id}`, reviewData)
-//             .then(res => {
-//                 console.log(res.data)
-//             })
-//     } catch (e) {
-//         console.log("리뷰 등록 실패", e)
-//     }
-// }
 
+
+//요구사항 6번 리뷰 등록하기
 async function addComments(guest_name, reservation_id, content, star){
     console.log("addComments is running...")
 
@@ -136,45 +119,12 @@ async function addComments(guest_name, reservation_id, content, star){
         const res = await axios.post(`http://127.0.0.1:3000/writeReview/${reservation_id}`,reviewData)
             .then(res => {
                 console.log(res.data)
+                console.log("리뷰 등록 성공")
             })
     } catch (e) {
-        console.log("리뷰 등록 실패", e)
+        console.log("리뷰 등록 실패")
     }
 }
-// async function addComments(guest_name, reservation_id, content, star){
-//     console.log("addComments is running...")
-//
-//     try{
-//         const reviewData = {
-//             guest_name: guest_name,
-//             content: content,
-//             star: star
-//         }
-//         console.log(reviewData)
-//
-//         const res = await axios.post(`http://127.0.0.1:3000/writeReview?reservationId=${reservation_id}`, reviewData)
-//             .then(res => {
-//                 console.log(res.data)
-//             })
-//     } catch (e) {
-//         console.log("리뷰 등록 실패", e)
-//     }
-// }
-// const addComments = async (reservation_id, guest_name, content, star) => {
-//     try {
-//         const res = await axios.post(`http://127.0.0.1:3000/writeReview?reservationId=${reservation_id}`, {
-//             guest_name,
-//             content,
-//             star
-//         })
-//             .then(res => {
-//                 console.log(res.data)
-//             })
-//     } catch (e) {
-//         console.log("리뷰 작성 실패")
-//     }
-// }
-
 
 
 module.exports = {
