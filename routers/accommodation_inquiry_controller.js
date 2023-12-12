@@ -3,6 +3,7 @@ const {Accommodation} = require('../models/accommodation')
 const {Guest} = require('../models/guest')
 const {Reservation} = require('../models/reservation')
 const {countWeekdaysAndWeekends} = require('../utils');
+const {Review} = require("../models/review");
 
 const accommodationRouter = Router();
 let available = [];
@@ -122,7 +123,7 @@ accommodationRouter.get('/select_one', async (req, res) => {
     try {
         const name = req.query.name;
         const accommodation = await Accommodation.findOne({name: name})
-        const reservations = await Reservation.find({accommodation: accommodation._id})
+        const reservations = await Reservation.find({accommodation: accommodation._id}).populate("accommodation")
         res.status(202).json({accommodation, reservations})
     } catch (error) {
         console.log(error);

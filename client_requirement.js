@@ -1,5 +1,5 @@
 const axios = require("axios");
-const {print_reservation_history, printAccommodationInfo} = require("./print")
+const {print_reservation_history,printCal, printAccommodationInfo, printReview, printDetailAccommodationInfo, printAllCal, printPersonalCal} = require("./print")
 
 //요구사항 1번 - 조건에 맞는 숙소 조회하기
 const inquiryAccommodation = async (checkIn, checkOut, number, houseType) => {
@@ -36,6 +36,27 @@ const inquiryPersonalTypeAccommodation = async () => {
         }
     } catch (error) {
         console.error("Error in inquiryAccommodation:", error);
+    }
+}
+
+// 요구사항 2번 - 숙소 상세 조회하기
+const houseDetail = async (accommodation_name, month) => {
+    try{
+        const response = await axios.get("http://127.0.0.1:3000/accommodation/select_one?name=" + accommodation_name)
+            .then(res => res.data)
+        if(response.accommodation.length === 0) {
+            console.log("해당 숙소가 없습니다.");
+            return;
+        }
+        printDetailAccommodationInfo(response.accommodation);
+
+        printReview(response.reservations);
+
+        const type = response.accommodation.type;
+        printCal(response.reservations, month, type, response.accommodation.capacity)
+
+    } catch (e) {
+        console.error("Error in inquiryAccommodation:", e);
     }
 }
 
@@ -81,13 +102,88 @@ async function reservationHistory(guest_name, type) {
         console.log("예약 내역 조회 실패")
     }
 }
-//TODO 요구사항 6번 리뷰 작성하기
+// async function addComments(guest_name, reservation_id, content, star){
+//     console.log("addComments is running...")
+//
+//     try{
+//         const reviewData = {
+//             guest_name: guest_name,
+//             content: content,
+//             star: star
+//         }
+//         console.log(reviewData)
+//
+//         const res = await axios.post(`http://127.0.0.1:3000/writeReview/${reservation_id}`, reviewData)
+//             .then(res => {
+//                 console.log(res.data)
+//             })
+//     } catch (e) {
+//         console.log("리뷰 등록 실패", e)
+//     }
+// }
+
+async function addComments(guest_name, reservation_id, content, star){
+    console.log("addComments is running...")
+
+    try{
+        const reviewData = {
+            guest_name: guest_name,
+            content: content,
+            star: star
+        }
+        console.log(reviewData)
+
+        const res = await axios.post(`http://127.0.0.1:3000/writeReview/${reservation_id}`,reviewData)
+            .then(res => {
+                console.log(res.data)
+            })
+    } catch (e) {
+        console.log("리뷰 등록 실패", e)
+    }
+}
+// async function addComments(guest_name, reservation_id, content, star){
+//     console.log("addComments is running...")
+//
+//     try{
+//         const reviewData = {
+//             guest_name: guest_name,
+//             content: content,
+//             star: star
+//         }
+//         console.log(reviewData)
+//
+//         const res = await axios.post(`http://127.0.0.1:3000/writeReview?reservationId=${reservation_id}`, reviewData)
+//             .then(res => {
+//                 console.log(res.data)
+//             })
+//     } catch (e) {
+//         console.log("리뷰 등록 실패", e)
+//     }
+// }
+// const addComments = async (reservation_id, guest_name, content, star) => {
+//     try {
+//         const res = await axios.post(`http://127.0.0.1:3000/writeReview?reservationId=${reservation_id}`, {
+//             guest_name,
+//             content,
+//             star
+//         })
+//             .then(res => {
+//                 console.log(res.data)
+//             })
+//     } catch (e) {
+//         console.log("리뷰 작성 실패")
+//     }
+// }
+
+
 
 module.exports = {
     inquiryAccommodation,
     inquiryAllTypeAccommodation,
     inquiryPersonalTypeAccommodation,
+    houseDetail,
     bookHouse,
     reservationHistory,
-    cancelReservation
+    cancelReservation,
+    addComments
 }
