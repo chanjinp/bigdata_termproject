@@ -1,12 +1,12 @@
 const faker = require("faker");
 const {Reservation} = require('./models/reservation')
 const generateCheckInDate = () => {
-    const checkInDate = faker.date.between('2023-01-01', '2023-12-09');
+    const checkInDate = faker.date.between('2023-01-01', '2023-12-31');
     checkInDate.setHours(0, 0, 0, 0)
     return checkInDate
 };
 const generateThisMonthDate = () => {
-    const checkInDate = faker.date.between('2023-11-30', '2023-12-09');
+    const checkInDate = faker.date.between('2023-11-30', '2023-12-31');
     checkInDate.setHours(0, 0, 0, 0)
     return checkInDate
 }

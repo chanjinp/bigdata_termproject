@@ -118,7 +118,7 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
         )
     }
 
-    //숙소 당 예약 5개, 후기 3개, 후기 없음 2개
+    //숙소 당 예약 7개 체크아웃이 false인 예약 2개, 후기 3개, 후기 없음 2개,
     accommodations.map(async (accommodation) => {
         let i = 0
         let checkInDate;
@@ -156,17 +156,30 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
                     star: Math.floor(Math.random() * (5 - 1 + 1)) + 1,
                     content: faker.lorem.words(),
                 }) : null;
-
-                const newReservation = new Reservation({
-                    guest: guests[Math.floor(Math.random() * nGuest)]._id,
-                    accommodation: accommodation,
-                    review: review,
-                    totalPrice: accommodation.weekdayPrice * dayCount.weekdayCount + accommodation.weekendPrice * dayCount.weekendCount,
-                    reservationNum: availableReservationNum,
-                    checkIn: checkInDate,
-                    checkOut: checkOutDate,
-                    isCheckOut: true,
-                });
+                let newReservation = null;
+                if(i <= 4) {
+                     newReservation = new Reservation({
+                        guest: guests[Math.floor(Math.random() * nGuest)]._id,
+                        accommodation: accommodation,
+                        review: review,
+                        totalPrice: accommodation.weekdayPrice * dayCount.weekdayCount + accommodation.weekendPrice * dayCount.weekendCount,
+                        reservationNum: availableReservationNum,
+                        checkIn: checkInDate,
+                        checkOut: checkOutDate,
+                        isCheckOut: true,
+                    });
+                }else {
+                     newReservation = new Reservation({
+                        guest: guests[Math.floor(Math.random() * nGuest)]._id,
+                        accommodation: accommodation,
+                        review: review,
+                        totalPrice: accommodation.weekdayPrice * dayCount.weekdayCount + accommodation.weekendPrice * dayCount.weekendCount,
+                        reservationNum: availableReservationNum,
+                        checkIn: checkInDate,
+                        checkOut: checkOutDate,
+                        isCheckOut: false,
+                    });
+                }
 
                 reservations.push(newReservation);
                 if (review != null) {
