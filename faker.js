@@ -5,6 +5,9 @@ const fs = require('fs');
 const {generateCheckInDate, countWeekdaysAndWeekends, generateCheckOutDate, generateThisMonthDate} = require('./utils')
 const file_path = `./accommodation.txt`
 
+const checkInStart_range = ['2023-01-02','2023-02-02','2023-03-02','2023-04-02','2023-05-02','2023-06-02','2023-07-02','2023-08-02','2023-09-02','2023-10-02','2023-11-02','2023-12-02'];
+const checkInEnd_range = ['2023-01-25','2023-02-20','2023-03-25','2023-04-25','2023-05-25','2023-06-25','2023-07-25','2023-08-25','2023-09-25','2023-10-25','2023-11-25','2023-12-25'];
+
 function readAccommodationName(filePath, callback) {
     // 파일 읽기
     fs.readFile(file_path, 'utf8', (err, data) => {
@@ -125,10 +128,12 @@ generateDummyData = async (nAccommodation, nGuest, nReservation) => {
         let avgStar = 0;
         while (i < nReservation) {
 
+            let randomDateIdx = Math.floor(Math.random()* 11) //idx 0[1월] ~ 11[12월]
+
             if (i > 3) {
                 checkInDate = generateThisMonthDate();
             } else {
-                checkInDate = generateCheckInDate();
+                checkInDate = generateCheckInDate(checkInStart_range[randomDateIdx], checkInEnd_range[randomDateIdx]);
             }
             const checkOutDate = generateCheckOutDate(checkInDate);
             const dayCount = countWeekdaysAndWeekends(checkInDate, checkOutDate)

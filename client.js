@@ -10,8 +10,8 @@ const checkout = new Date("2023-12-05");
 // inquiryAccommodation(checkin, checkout, 5, "All");
 // inquiryAccommodation(checkin, checkout, 5, "Personal");
 
-//요구사항 2 //TODO 11/30 ~ 12/2의 경우 11월 반영 안됨 - 수정 요망
-// houseDetail("숙소3", 12)
+//요구사항 2
+houseDetail("숙소10", 12)
 
 //요구사항 3
 // bookHouse("guest1", "숙소8", "2023-12-14", "2023-12-20", 2)
